@@ -215,6 +215,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".mobile-menu a");
 
 
+    mobileLinks.forEach((link) => {
+
+        link.setAttribute("tabindex", "-1");
+
+    });
+
+
     if (menuToggle && mobileMenu) {
 
         menuToggle.addEventListener("click", () => {
@@ -230,6 +237,12 @@ document.addEventListener("DOMContentLoaded", () => {
             );
             document.body.classList.toggle("menu-open", isOpen);
 
+            mobileLinks.forEach((link) => {
+
+                link.setAttribute("tabindex", isOpen ? "0" : "-1");
+
+            });
+
         });
 
 
@@ -244,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 menuToggle.setAttribute("aria-expanded", "false");
                 menuToggle.setAttribute("aria-label", "Open menu");
                 document.body.classList.remove("menu-open");
+                link.setAttribute("tabindex", "-1");
 
             });
 
@@ -479,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
 
                 const focusable = reservationModal.querySelectorAll(
-                    "button:not([hidden]), input:not([hidden]), select:not([hidden])"
+                    "button:not([hidden]), form:not([hidden]) input, form:not([hidden]) select"
                 );
                 const first = focusable[0];
                 const last = focusable[focusable.length - 1];
