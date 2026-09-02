@@ -47,6 +47,14 @@ button {
     font: inherit;
 }
 
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--gold-light);
+    outline-offset: 4px;
+}
+
 img,
 video {
     max-width: 100%;
@@ -256,6 +264,10 @@ video {
     visibility: visible;
 
     transform: translateY(0);
+}
+
+body.menu-open {
+    overflow: hidden;
 }
 
 
@@ -1089,6 +1101,8 @@ video {
 
     color: var(--gold);
 
+    cursor: pointer;
+
     transition:
         background 0.3s ease,
         color 0.3s ease,
@@ -1756,6 +1770,28 @@ footer span {
     pointer-events: auto;
 }
 
+.reservation-success {
+    text-align: center;
+}
+
+.reservation-success h3 {
+    margin: 1.5rem 0;
+    font-family: var(--serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--ivory);
+}
+
+.reservation-success p {
+    max-width: 29rem;
+    margin: 0 auto 2rem;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--muted);
+}
+
 
 /* -----------------------------------------
    MODAL PANEL
@@ -2069,3 +2105,4 @@ footer span {
     }
 
 }
+

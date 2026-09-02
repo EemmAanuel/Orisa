@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tagline = document.querySelector(".hero-tagline");
     const scrollIndicator = document.querySelector(".scroll-indicator");
     const navbar = document.querySelector(".navbar");
+    const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
 
 
     let animationRunning = false;
@@ -47,6 +50,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function playHeroAnimation() {
 
         if (animationRunning) return;
+
+        if (prefersReducedMotion) {
+
+            letters.forEach((letter) => {
+                letter.style.opacity = "1";
+                letter.style.transform = "none";
+                letter.style.filter = "none";
+            });
+
+            tagline.style.opacity = "1";
+            scrollIndicator.style.opacity = "0.5";
+            navbar.style.opacity = "1";
+
+            return;
+
+        }
 
         animationRunning = true;
 
@@ -200,9 +219,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         menuToggle.addEventListener("click", () => {
 
-            menuToggle.classList.toggle("active");
+            const isOpen = menuToggle.classList.toggle("active");
 
-            mobileMenu.classList.toggle("active");
+            mobileMenu.classList.toggle("active", isOpen);
+            mobileMenu.setAttribute("aria-hidden", String(!isOpen));
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
+            menuToggle.setAttribute(
+                "aria-label",
+                isOpen ? "Close menu" : "Open menu"
+            );
+            document.body.classList.toggle("menu-open", isOpen);
 
         });
 
@@ -214,6 +240,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 menuToggle.classList.remove("active");
 
                 mobileMenu.classList.remove("active");
+                mobileMenu.setAttribute("aria-hidden", "true");
+                menuToggle.setAttribute("aria-expanded", "false");
+                menuToggle.setAttribute("aria-label", "Open menu");
+                document.body.classList.remove("menu-open");
 
             });
 
@@ -301,12 +331,6 @@ document.addEventListener("DOMContentLoaded", () => {
        REDUCED MOTION
        ========================================================= */
 
-    const prefersReducedMotion =
-        window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        ).matches;
-
-
     if (prefersReducedMotion) {
 
         menuItems.forEach((item) => {
@@ -337,14 +361,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const reservationForm =
         document.querySelector("#reservation-form");
 
+    const reservationSuccess =
+        document.querySelector("#reservation-success");
+
+    const reservationDone =
+        document.querySelector("#reservation-done");
+
+    const guestName = document.querySelector("#guest-name");
+    const guestDate = document.querySelector("#guest-date");
+    const guestTime = document.querySelector("#guest-time");
+    const guestCount = document.querySelector("#guest-count");
+    const confirmationName =
+        document.querySelector("#reservation-guest-name");
+    const confirmationDetails =
+        document.querySelector("#reservation-details");
+
+    let lastFocusedElement = null;
+
+    if (guestDate) {
+
+        guestDate.min = new Date().toISOString().split("T")[0];
+
+    }
+
 
     function openReservation() {
 
         if (!reservationModal) return;
 
+        lastFocusedElement = document.activeElement;
+
+        reservationForm.hidden = false;
+        reservationSuccess.hidden = true;
         reservationModal.classList.add("active");
+        reservationModal.setAttribute("aria-hidden", "false");
 
         document.body.style.overflow = "hidden";
+
+        window.setTimeout(() => guestName?.focus(), 100);
 
     }
 
@@ -354,8 +408,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!reservationModal) return;
 
         reservationModal.classList.remove("active");
+        reservationModal.setAttribute("aria-hidden", "true");
 
         document.body.style.overflow = "";
+
+        lastFocusedElement?.focus();
 
     }
 
@@ -416,6 +473,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
 
+            if (
+                event.key === "Tab" &&
+                reservationModal?.classList.contains("active")
+            ) {
+
+                const focusable = reservationModal.querySelectorAll(
+                    "button:not([hidden]), input:not([hidden]), select:not([hidden])"
+                );
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+
+                if (event.shiftKey && document.activeElement === first) {
+
+                    event.preventDefault();
+                    last.focus();
+
+                } else if (!event.shiftKey && document.activeElement === last) {
+
+                    event.preventDefault();
+                    first.focus();
+
+                }
+
+            }
+
         }
     );
 
@@ -428,16 +510,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                alert(
-                    "Thank you. Your reservation request has been received."
-                );
+                const date = new Intl.DateTimeFormat("en-NG", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                }).format(new Date(`${guestDate.value}T12:00:00`));
 
-                reservationForm.reset();
+                confirmationName.textContent = guestName.value.trim();
+                confirmationDetails.textContent =
+                    `${guestCount.value} guest${guestCount.value === "1" ? "" : "s"} on ${date} at ${guestTime.value}`;
 
-                closeReservation();
+                reservationForm.hidden = true;
+                reservationSuccess.hidden = false;
+                reservationDone.focus();
 
             }
         );
 
     }
+
+
+    reservationDone?.addEventListener("click", () => {
+
+        reservationForm.reset();
+        closeReservation();
+
+    });
 });
+

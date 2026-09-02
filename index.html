@@ -67,6 +67,8 @@
         <button
             class="menu-toggle"
             aria-label="Open menu"
+            aria-controls="mobile-menu"
+            aria-expanded="false"
             type="button"
         >
 
@@ -83,7 +85,11 @@
          MOBILE MENU
          ========================================== -->
 
-    <div class="mobile-menu">
+    <div
+        class="mobile-menu"
+        id="mobile-menu"
+        aria-hidden="true"
+    >
 
         <nav>
 
@@ -613,15 +619,15 @@
 
             <!-- RESERVATION BUTTON -->
 
-            <a
-                href="javascript:void(0)"
+            <button
+                type="button"
                 class="contact-link"
                 id="reservation-button"
             >
 
                 MAKE A RESERVATION
 
-            </a>
+            </button>
 
         </section>
 
@@ -661,6 +667,10 @@
     <div
         class="reservation-modal"
         id="reservation-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reservation-title"
+        aria-hidden="true"
     >
 
         <div class="reservation-modal-inner">
@@ -681,7 +691,7 @@
             </span>
 
 
-            <h2>
+            <h2 id="reservation-title">
 
                 Dine at
                 <em>ORÍSA.</em>
@@ -743,6 +753,8 @@
                             type="time"
                             id="guest-time"
                             name="time"
+                            min="12:00"
+                            max="22:00"
                             required
                         >
 
@@ -814,6 +826,19 @@
 
             </form>
 
+            <div
+                class="reservation-success"
+                id="reservation-success"
+                role="status"
+                aria-live="polite"
+                hidden
+            >
+                <span class="section-label">REQUEST RECEIVED</span>
+                <h3>Thank you, <span id="reservation-guest-name"></span>.</h3>
+                <p>Your request for <span id="reservation-details"></span> is ready for our team to confirm.</p>
+                <button type="button" class="reservation-submit" id="reservation-done">DONE</button>
+            </div>
+
 
         </div>
 
@@ -831,3 +856,4 @@
 </body>
 
 </html>
+
